@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# MySQL backup script
+# Agrajag - A daily rotating MySQL backup script
 # Copyright (c) 2015 by Florian Beer <fb@42dev.eu>
 
 # This script comes with ABSOLUTELY NO WARRANTY.
@@ -16,7 +16,7 @@ declare -r TARGET="/backup/mysql"
 # Location of config file for mysql and mysldump
 declare -r CONF="~/.my.cnf"
 
-# Exclude the following lines from SHOW DATRABASES. Separated by "|".
+# Exclude the following lines from SHOW DATABASES. Separated by "|".
 declare -r IGNORE="Database|phpmyadmin|mysql|information_schema|performance_schema|test"
 
 # How many days of backups to keep
