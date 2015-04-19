@@ -3,7 +3,7 @@ A daily rotating MySQL backup script
 
 Copyright (c)2015 by [Florian Beer](https://github.com/florianbeer)
 
-Version 1.01
+Version 0.1
 
 
 This script comes with ABSOLUTELY NO WARRANTY.
