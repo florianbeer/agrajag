@@ -17,7 +17,7 @@ declare -r TARGET="/backup/mysql"
 declare -r CONF="~/.my.cnf"
 
 # Exclude the following lines from SHOW DATABASES. Separated by "|".
-declare -r IGNORE="Database|phpmyadmin|mysql|information_schema|performance_schema|test"
+declare -r IGNORE="phpmyadmin|mysql|information_schema|performance_schema|test"
 
 # How many days of backups to keep
 declare -r RETAIN=5
@@ -29,7 +29,7 @@ main() {
 	declare -r time=`date +%F_%R`
 	declare -r start=$(date +%s)
 	declare -r hostname=$(hostname -f)
-	declare -r databases=$(/usr/bin/mysql --defaults-extra-file=${CONF} -e "SHOW DATABASES;" | grep -Ev "${IGNORE}")
+	declare -r databases=$(/usr/bin/mysql --defaults-extra-file=${CONF} --skip-column-names -B -e "SHOW DATABASES;" | grep -Ev "${IGNORE}")
 
 	/usr/bin/logger -t `basename $0` "Starting backup for ${time}"
 
