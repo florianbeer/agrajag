@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+# MySQL backup script
+# Copyright (c) 2015 by Florian Beer <fb@42dev.eu>
+
+# This script comes with ABSOLUTELY NO WARRANTY.
+# This is free software, and you are welcome to redistribute it
+# under certain conditions. See CC BY-NC-SA 4.0 for details.
+# https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+set -e
+
+# Database backup directory
+declare -r TARGET="/backup/mysql"
+
+# Location of config file for mysql and mysldump
+declare -r CONF="~/.my.cnf"
+
+# Exclude the following lines from SHOW DATRABASES. Separated by "|".
+declare -r IGNORE="Database|phpmyadmin|mysql|information_schema|performance_schema|test"
+
+# How many days of backups to keep
+declare -r RETAIN=5
+
+# Script version
+declare -r VERSION="0.1"
+
+main() {
+	declare -r time=`date +%F_%R`
+	declare -r start=$(date +%s)
+	declare -r hostname=$(hostname -f)
+	declare -r databases=$(/usr/bin/mysql --defaults-extra-file=${CONF} -e "SHOW DATABASES;" | grep -Ev "${IGNORE}")
+
+	/usr/bin/logger -t `basename $0` "Starting backup for ${time}"
+
+	umask 177
+
+	for db in $databases; do
+		if [ ! -d "${TARGET}/${hostname}/${db}" ]; then
+			mkdir -p ${TARGET}/${hostname}/${db}
+		fi
+
+		/usr/bin/logger -t `basename $0` "Backing up ${db}"
+		/usr/bin/mysqldump --defaults-extra-file=${CONF} --skip-extended-insert \
+			--skip-comments --skip-quick --add-drop-database --events --databases ${db} \
+			--log-error=/var/log/mysql.err | gzip > "${TARGET}/${hostname}/${db}/${time}.sql.gz"
+
+		/usr/bin/find ${TARGET}/${hostname}/${db}/* -mtime +${RETAIN} -exec rm {} \;
+	done
+
+	declare -r end=$(date +%s)
+	declare -r runtime=$(python -c "print '%u minutes %02u seconds' % ((${end} - ${start})/60, (${end} - ${start})%60)")
+	/usr/bin/logger -t `basename $0` "Backup for ${time} took ${runtime}"
+}
+
+main "@"
