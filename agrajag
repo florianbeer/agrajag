@@ -28,7 +28,7 @@ declare -r VERSION="0.1"
 main() {
 	declare -r time=`date +%F_%R`
 	declare -r start=$(date +%s)
-	declare -r hostname=$(hostname -f)
+	declare -r hostname=$(hostname)
 	declare -r databases=$(/usr/bin/mysql --defaults-extra-file=${CONF} --skip-column-names -B -e "SHOW DATABASES;" | grep -Ev "${IGNORE}")
 
 	/usr/bin/logger -t `basename $0` "Starting backup for ${time}"
