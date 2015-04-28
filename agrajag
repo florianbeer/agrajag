@@ -23,7 +23,7 @@ declare -r IGNORE="phpmyadmin|mysql|information_schema|performance_schema|test"
 declare -r RETAIN=5
 
 # Script version
-declare -r VERSION="0.1"
+declare -r VERSION="0.2"
 
 main() {
 	local -r time=$(date +%F_%R)
